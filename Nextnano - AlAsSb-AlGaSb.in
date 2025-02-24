@@ -1,0 +1,196 @@
+$QW_w = 4
+$Al = 0.05
+$Temp = 300
+
+global{
+  simulate1D{}
+
+  crystal_zb{
+    x_hkl = [1, 0, 0]
+    y_hkl = [0, 1, 0]
+  }
+  
+  substrate{
+    name = "GaSb"
+  }
+
+  temperature = $Temp
+
+
+}
+
+database{
+
+
+}
+
+structure{
+  output_region_index{ boxes = no }
+  output_contact_index{ boxes = no }
+  output_alloy_composition{ boxes = no }  
+
+  region{ #substrate
+
+    everywhere{}
+    binary{ name = "GaSb" }
+    contact{ name = "dummy" }
+        
+  }
+region{
+      line{
+         x = [0,10]
+      }
+      ternary_constant{ name = "AlAs(x)Sb(1-x)"
+      alloy_x = 0.05
+      }      
+
+
+}
+
+
+region{
+      line{
+         x = [10,10+$QW_w]
+      }
+      ternary_constant  {
+      name       = "Al(x)Ga(1-x)Sb"
+
+      alloy_x = $Al
+
+      }      
+}
+
+region{
+      line{
+         x = [10+$QW_w,20+$QW_w]
+      }    
+      ternary_constant{ name = "AlAs(x)Sb(1-x)"
+      alloy_x = 0.05
+
+
+
+
+      }      
+
+
+
+}
+
+
+}
+   
+grid{
+
+   xgrid{
+   line{pos = 0.0                                             spacing = 0.05}
+   line{pos = 10.0                                             spacing = 0.05}
+   line{pos = 10+$QW_w                                             spacing = 0.05}
+   line{pos = 20+$QW_w                                             spacing = 0.05}
+
+
+   
+   }
+}
+
+classical{
+
+  Gamma{
+    #output_bandedge{
+    #  averaged = yes
+    #}
+  }
+
+  L{
+    #output_bandedge{
+    #  averaged = yes
+    #}    
+  }
+
+  X{
+    #output_bandedge{
+    #  averaged = yes
+    #}
+  }
+
+  LH{
+    #output_bandedge{
+    #  averaged = yes
+    #}
+  }
+
+  HH{
+    #output_bandedge{
+    #  averaged = yes
+    #}
+  }
+
+  SO{
+    #output_bandedge{
+    #  averaged = yes
+    #}
+  }
+
+  output_carrier_densities{}
+  output_bandgap{}
+  output_bandedges{}
+
+}
+
+strain{
+
+  minimized_strain{}
+  output_strain_tensor{}
+  output_hydrostatic_strain{}
+  
+}
+
+poisson{
+between_fermi_levels{}
+}
+
+quantum {
+
+
+
+region{
+    name = "quantum_region"
+    x = [0,40+$QW_w]  
+    boundary{
+      x = dirichlet
+    }
+    no_density = yes
+
+
+#    Gamma{num_ev = 2}
+
+#    L{num_ev = 2}
+
+#    X{num_ev = 2}
+
+#    HH{num_ev = 2}
+
+#    LH{num_ev = 2}
+
+#    SO{num_ev = 2}
+    
+    kp_8band{ num_electrons = 1 num_holes = 1 accuracy = 1e-9 iterations = 1000 lapack{} spurious_handling = [0.0, 1.0, -1.0, 1.0, 0.0, 1.0 ] shift_window = 0}
+
+    output_wavefunctions{ max_num = 1000  all_k_points = no  amplitudes = yes  probabilities = yes }
+
+    }
+
+}
+
+
+contacts{
+  fermi { name = "dummy" bias = 0.0 }
+}
+
+
+run{
+
+strain{}
+poisson{}
+quantum{}
+
+}
